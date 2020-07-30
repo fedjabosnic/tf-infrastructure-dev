@@ -1,0 +1,3 @@
+[submodule "stack-aaa"]
+	path = stack-aaa
+	url = https://github.com/fedjabosnic/tf-stack-aaa.git
