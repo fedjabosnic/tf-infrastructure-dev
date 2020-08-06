@@ -64,7 +64,7 @@ jobs:
         STACK_HEAD=$(git submodule status stack-${STACK} | cut -c 1-8)
 
         # Prepare commit message
-        STACK_DIFF=$(git diff --submodule=log stack-${STACK} | sed '1G' | 's/  </-/g')
+        STACK_DIFF=$(git diff --submodule=log stack-${STACK} | sed '1G' | sed 's/  </-/g')
 
         git add .
         git commit -m "${STACK_DIFF}" || echo "No changes to commit"
