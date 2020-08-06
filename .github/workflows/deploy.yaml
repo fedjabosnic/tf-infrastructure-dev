@@ -59,7 +59,7 @@ jobs:
 
         # Update submodule
         STACK_BASE=$(git submodule status stack-${STACK} | cut -c 1-8)
-        cd stack-${STACK} && git pull --all && git checkout ${ENVIRONMENT} && cd ..
+        cd stack-${STACK} && git fetch --all && git checkout ${ENVIRONMENT} && cd ..
         STACK_HEAD=$(git submodule status stack-${STACK} | cut -c 1-8)
 
         # Prepare commit message
