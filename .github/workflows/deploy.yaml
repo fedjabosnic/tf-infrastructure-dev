@@ -6,6 +6,9 @@ on:
 
 env:
   GITHUB_TOKEN: ${{ secrets.BOT_TOKEN }}
+  ENVIRONMENT: ${{ github.event.client_payload.environment }}
+  STACK: ${{ github.event.client_payload.stack }}
+  BRANCH: release/auto
 
 jobs:
   build:
@@ -38,3 +41,37 @@ jobs:
         MATRIX_CONTEXT: ${{ toJson(matrix) }}
       run: echo "$MATRIX_CONTEXT"
 
+    - name: Pull code
+      uses: actions/checkout@v2
+      with:
+        submodules: 'recursive'
+    
+    - name: Create or update release branch
+      run: |
+        # Create branch
+        git checkout -B ${BRANCH}
+
+        # Add submodule
+        if [ ! -d "stack-${STACK}" ]; then
+          git submodule add git@github.com:fedjabosnic/tf-stack-${STACK}.git stack-${STACK}
+          git submodule update --remote
+        fi
+
+        # Update submodule
+        STACK_BASE=git submodule status stack-${STACK} | cut -c 1-8
+        cd stack-${STACK} && git pull --all && git checkout ${ENVIRONMENT} && cd ..
+        STACK_HEAD=git submodule status stack-${STACK} | cut -c 1-8
+
+        # Prepare commit message
+        STACK_DIFF=echo "$(git diff --submodule=log stack-${STACK})" | sed '1G' | 's/  </-/g'
+
+        git add .
+        git commit -m "${STACK_DIFF}" || echo "No changes to commit"
+
+    - name: Create or update pull request
+      uses: gr2m/create-or-update-pull-request-action@v1.x
+      with:
+        branch: ${{ env.BRANCH }}
+        title: "Release: auto-generated"
+        body: "Auto-generated release based on stack changes"
+        
