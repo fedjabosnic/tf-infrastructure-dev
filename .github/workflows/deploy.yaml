@@ -67,6 +67,8 @@ jobs:
         STACK_DIFF=$(git diff --submodule=log stack-${STACK} | sed '1G' | sed 's/  </-/g')
 
         git add .
+        git config --global user.email "fedjabosnic@gmail.com"
+        git config --global user.name "fedjabosnic"
         git commit -m "${STACK_DIFF}" || echo "No changes to commit"
 
     - name: Create or update pull request
