@@ -50,7 +50,7 @@ jobs:
     - name: Create or update release branch
       run: |
         # Create branch
-        git checkout -B ${BRANCH}
+        # git checkout -B ${BRANCH}
 
         # Add submodule
         if [ ! -d "stack-${STACK}" ]; then
@@ -66,11 +66,13 @@ jobs:
         # Prepare commit message
         STACK_DIFF=$(git diff --submodule=log stack-${STACK} | sed '1G' | sed 's/  </-/g')
 
-        git add .
-        git config --global user.email "fedjabosnic@gmail.com"
-        git config --global user.name "fedjabosnic"
-        git commit -m "${STACK_DIFF}" || echo "No changes to commit"
-        git push origin ${BRANCH}
+        echo ::set-env name=STACK_DIFF::${STACK_DIFF}
+
+        # git add .
+        # git config --global user.email "fedjabosnic@gmail.com"
+        # git config --global user.name "fedjabosnic"
+        # git commit -m "${STACK_DIFF}" || echo "No changes to commit"
+        # git push origin ${BRANCH}
 
     - name: Create or update pull request
       uses: gr2m/create-or-update-pull-request-action@v1.x
@@ -78,4 +80,6 @@ jobs:
         branch: ${{ env.BRANCH }}
         title: "Release: auto-generated"
         body: "Auto-generated release based on stack changes"
+        commit-message: ${{ env.STACK_DIFF }}
+        author: "Fedja Bosnic <fedjabosnic@gmail.com>"
         
