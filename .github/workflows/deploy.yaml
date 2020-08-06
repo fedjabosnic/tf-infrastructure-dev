@@ -58,9 +58,9 @@ jobs:
         fi
 
         # Update submodule
-        STACK_BASE=git submodule status stack-${STACK} | cut -c 1-8
+        STACK_BASE=echo "$(git submodule status stack-${STACK})" | cut -c 1-8
         cd stack-${STACK} && git pull --all && git checkout ${ENVIRONMENT} && cd ..
-        STACK_HEAD=git submodule status stack-${STACK} | cut -c 1-8
+        STACK_HEAD=echo "$(git submodule status stack-${STACK})" | cut -c 1-8
 
         # Prepare commit message
         STACK_DIFF=echo "$(git diff --submodule=log stack-${STACK})" | sed '1G' | 's/  </-/g'
