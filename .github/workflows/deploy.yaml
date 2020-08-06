@@ -70,6 +70,7 @@ jobs:
         git config --global user.email "fedjabosnic@gmail.com"
         git config --global user.name "fedjabosnic"
         git commit -m "${STACK_DIFF}" || echo "No changes to commit"
+        git push
 
     - name: Create or update pull request
       uses: gr2m/create-or-update-pull-request-action@v1.x
