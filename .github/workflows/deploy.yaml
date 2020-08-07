@@ -47,7 +47,6 @@ jobs:
       with:
         token: ${{ env.GITHUB_TOKEN }}
         fetch-depth: '0'
-        submodules: 'recursive'
 
     - name: Install SSH key
       uses: webfactory/ssh-agent@v0.2.0
@@ -58,11 +57,11 @@ jobs:
       run: |
         # Add submodule
         if [ ! -d "stack-${STACK}" ]; then
-          #git config --global url."https://github.com/".insteadOf git@github.com:
           git submodule add git@github.com:fedjabosnic/tf-stack-${STACK}.git stack-${STACK}
-          git submodule update --remote
           echo " ${STACK}" >> .variables/stacks
         fi
+
+        git submodule update --remote
 
         # Update submodule
         STACK_BASE=$(git submodule status stack-${STACK} | cut -c 2-9)
