@@ -21,6 +21,11 @@ jobs:
         fetch-depth: '0'
         submodules: 'recursive'
 
+    - name: Install SSH key
+      uses: webfactory/ssh-agent@v0.2.0
+      with:
+        ssh-private-key: ${{ env.SSH_KEY }}
+
     - name: Install terraform
       uses: hashicorp/setup-terraform@v1.1.0
       with:

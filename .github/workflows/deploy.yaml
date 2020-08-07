@@ -6,6 +6,7 @@ on:
 
 env:
   GITHUB_TOKEN: ${{ secrets.BOT_TOKEN }}
+  SSH_KEY: ${{ secrets.BOT_SSH_KEY }}
   ENVIRONMENT: ${{ github.event.client_payload.environment }}
   STACK: ${{ github.event.client_payload.stack }}
   BRANCH: release/stack-${{ github.event.client_payload.stack }}
@@ -47,12 +48,17 @@ jobs:
         token: ${{ env.GITHUB_TOKEN }}
         fetch-depth: '0'
         submodules: 'recursive'
-    
+
+    - name: Install SSH key
+      uses: webfactory/ssh-agent@v0.2.0
+      with:
+        ssh-private-key: ${{ env.SSH_KEY }}
+  
     - name: Create or update release branch
       run: |
         # Add submodule
         if [ ! -d "stack-${STACK}" ]; then
-          git config --global url."https://github.com/".insteadOf git@github.com:
+          #git config --global url."https://github.com/".insteadOf git@github.com:
           git submodule add git@github.com:fedjabosnic/tf-stack-${STACK}.git stack-${STACK}
           git submodule update --remote
           echo " ${STACK}" >> .variables/stacks
