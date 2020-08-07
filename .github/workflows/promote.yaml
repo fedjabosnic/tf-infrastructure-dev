@@ -72,4 +72,5 @@ jobs:
           ${{ env.ACTOR }}
         reviewers: |
           fedjabosnic
+          oliverdon
         #team-reviewers: /b2c
