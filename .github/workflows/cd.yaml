@@ -40,7 +40,8 @@ jobs:
 
     - name: Run terraform apply
       run: |
-        git submodule update --remote
+        git submodule init
+        git submodule update
 
         for STACK in $(cat .variables/stacks)
         do

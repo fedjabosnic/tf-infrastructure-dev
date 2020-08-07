@@ -35,7 +35,8 @@ jobs:
           echo " ${STACK}" >> .variables/stacks
         fi
 
-        git submodule update --remote
+        git submodule init
+        git submodule update
 
         # Update submodule
         STACK_BASE=$(git submodule status stack-${STACK} | cut -c 2-9)

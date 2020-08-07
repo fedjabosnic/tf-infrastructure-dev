@@ -42,7 +42,8 @@ jobs:
     - name: Run terraform plan
       id: plan
       run: |
-        git submodule update --remote
+        git submodule init
+        git submodule update
 
         for STACK in $(cat .variables/stacks)
         do
