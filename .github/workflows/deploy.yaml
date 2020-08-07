@@ -59,12 +59,12 @@ jobs:
         fi
 
         # Update submodule
-        STACK_BASE=$(git submodule status stack-${STACK} | cut -c 1-8)
+        STACK_BASE=$(git submodule status stack-${STACK} | cut -c 2-9)
         cd stack-${STACK} && git fetch --all && git checkout ${ENVIRONMENT} && cd ..
-        STACK_HEAD=$(git submodule status stack-${STACK} | cut -c 1-8)
+        STACK_HEAD=$(git submodule status stack-${STACK} | cut -c 2-9)
 
         # Prepare commit message
-        STACK_DIFF=$(git diff --submodule=log stack-${STACK} | sed '1G' | sed 's/  </- -/g' | sed 's/  >/- +/g')
+        STACK_DIFF=$(git diff --submodule=log stack-${STACK} | sed '1G' | sed 's/  </-/g' | sed 's/  >/-/g')
 
         STACK_DIFF="${STACK_DIFF//'%'/%25}"
         STACK_DIFF="${STACK_DIFF//$'\n'/%0A}"
@@ -74,30 +74,15 @@ jobs:
         echo ::set-env name=STACK_DIFF::${STACK_DIFF}
         echo ::set-env name=STACK_HEAD::${STACK_HEAD}
 
-        # git add .
-        # git config --global user.email "fedjabosnic@gmail.com"
-        # git config --global user.name "fedjabosnic"
-        # git commit -m "${STACK_DIFF}" || echo "No changes to commit"
-        # git push origin ${BRANCH}
-
     - name: Create PR
       uses: peter-evans/create-pull-request@v3
       with:
         token: ${{ env.GITHUB_TOKEN }}
-        commit-message: "stack-${{ env.STACK }}:${{ env.STACK_HEAD }}"
+        commit-message: "stack-${{ env.STACK }} @ ${{ env.STACK_HEAD }}"
         branch: ${{ env.BRANCH }}
         title: "Release: auto-generated"
         body: ${{ env.STACK_DIFF }}
         assignees: fedjabosnic
-        reviewers: fedjabosnic
-        #team-reviewers: /b2b
-
-    # - name: Create or update pull request
-    #   uses: gr2m/create-or-update-pull-request-action@v1.x
-    #   with:
-    #     branch: ${{ env.BRANCH }}
-    #     title: "Release: auto-generated"
-    #     body: "Auto-generated release based on stack changes"
-    #     commit-message: ${{ env.STACK_DIFF }}
-    #     author: "Fedja Bosnic <fedjabosnic@gmail.com>"
+        #reviewers: oliverdon
+        #team-reviewers: /b2c
         
