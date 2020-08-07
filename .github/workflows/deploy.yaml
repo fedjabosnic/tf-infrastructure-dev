@@ -8,7 +8,7 @@ env:
   GITHUB_TOKEN: ${{ secrets.BOT_TOKEN }}
   ENVIRONMENT: ${{ github.event.client_payload.environment }}
   STACK: ${{ github.event.client_payload.stack }}
-  BRANCH: release/auto
+  BRANCH: release/stack-${{ github.event.client_payload.stack }}
 
 jobs:
   build:
@@ -49,9 +49,6 @@ jobs:
     
     - name: Create or update release branch
       run: |
-        # Create branch
-        # git checkout -B ${BRANCH}
-
         # Add submodule
         if [ ! -d "stack-${STACK}" ]; then
           git submodule add git@github.com:fedjabosnic/tf-stack-${STACK}.git stack-${STACK}
@@ -80,9 +77,12 @@ jobs:
         token: ${{ env.GITHUB_TOKEN }}
         commit-message: "stack-${{ env.STACK }} @ ${{ env.STACK_HEAD }}"
         branch: ${{ env.BRANCH }}
-        title: "Release: auto-generated"
+        title: "Release: stack-${{ env.STACK }} @ ${{ env.STACK_HEAD }}"
         body: ${{ env.STACK_DIFF }}
-        assignees: fedjabosnic
-        #reviewers: oliverdon
+        assignees: |
+          bot-digit
+        reviewers: |
+          fedjabosnic
+          oliverdon
         #team-reviewers: /b2c
         
