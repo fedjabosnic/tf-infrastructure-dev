@@ -4,3 +4,6 @@
 [submodule "stack-bbb"]
 	path = stack-bbb
 	url = git@github.com:fedjabosnic/tf-stack-bbb.git
+[submodule "stack-ccc"]
+	path = stack-ccc
+	url = git@github.com:fedjabosnic/tf-stack-ccc.git
