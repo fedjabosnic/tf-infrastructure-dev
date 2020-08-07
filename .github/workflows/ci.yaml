@@ -1,0 +1,78 @@
+name: ci
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+    branches: [master]
+
+env:
+  GITHUB_TOKEN: ${{ secrets.BOT_TOKEN }}
+  TF_VERSION: 0.12.26
+  STACKS: "aaa bbb"
+
+jobs:
+  ci:
+    name: ci
+    runs-on: ubuntu-latest
+
+    steps:
+
+    - name: Pull code
+      uses: actions/checkout@v2
+      with:
+        fetch-depth: '0'
+        submodules: 'recursive'
+
+    - name: Install terraform
+      uses: hashicorp/setup-terraform@v1.1.0
+      with:
+        terraform_wrapper: false
+        terraform_version: ${{ env.TF_VERSION }}
+
+    - name: Run terraform plan
+      id: plan
+      run: |
+        for STACK in ${STACKS}
+        do
+        (
+          cd stack-${STACK}
+
+          terraform init -no-color
+          terraform plan -no-color -out planfile > plan.out
+          terraform show -no-color -json planfile > plan.json
+
+          changes=$(cat plan.json | jq -r '[.resource_changes[]? | { resource: .address, action: .change.actions[] } | select (.action != "no-op")]')
+          summary=$(echo $changes | jq -r '.   | "Stack <strong>'"${STACK}"'</strong> has <strong>\(length)</strong> changes"')
+          details=$(echo $changes | jq -r '.[] | "<li><code>\(.resource)</code> will be <strong>\(.action)d</strong></li>"')
+
+          echo "<details><summary>$summary</summary><ul>${details}</ul></details>" >> ../plan.log
+        )
+        done
+
+        echo ::set-output name=log::$(cat plan.log)
+
+    - name: Confirm success
+      if: success()
+      uses: peter-evans/create-or-update-comment@v1.4.2
+      with:
+        token: ${{ env.GITHUB_TOKEN }}
+        issue-number:  ${{ github.event.number }}
+        body: |
+          ### Terraform plan succeeded!
+
+          A summary of the changes is shown below:
+
+          ${{ steps.plan.outputs.log }}
+          
+          *You can see the complete command output [here](https://github.com/${{github.repository}}/actions/runs/${{github.run_id}})*
+
+    - name: Confirm failure
+      if: failure()
+      uses: peter-evans/create-or-update-comment@v1.4.2
+      with:
+        token: ${{ env.GITHUB_TOKEN }}
+        issue-number:  ${{ github.event.number }}
+        body: |
+          ### Terraform plan failed!
+
+          Check the logs [here](https://github.com/${{github.repository}}/actions/runs/${{github.run_id}})
