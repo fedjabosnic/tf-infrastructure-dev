@@ -7,7 +7,6 @@ on:
 env:
   GITHUB_TOKEN: ${{ secrets.BOT_TOKEN }}
   TF_VERSION: 0.12.26
-  STACKS: "aaa bbb"
 
 jobs:
   ci:
@@ -30,7 +29,7 @@ jobs:
 
     - name: Run terraform apply
       run: |
-        for STACK in ${STACKS}
+        for STACK in $(cat .variables/stacks)
         do
         (
           cd stack-${STACK}

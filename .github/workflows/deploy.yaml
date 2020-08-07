@@ -53,6 +53,7 @@ jobs:
         if [ ! -d "stack-${STACK}" ]; then
           git submodule add git@github.com:fedjabosnic/tf-stack-${STACK}.git stack-${STACK}
           git submodule update --remote
+          echo " ${STACK}" >> .variables/stacks
         fi
 
         # Update submodule
