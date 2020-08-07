@@ -9,6 +9,7 @@ env:
   SSH_KEY: ${{ secrets.BOT_SSH_KEY }}
   ENVIRONMENT: ${{ github.event.client_payload.environment }}
   STACK: ${{ github.event.client_payload.stack }}
+  ACTOR: ${{ github.event.client_payload.actor }}
   BRANCH: release/stack-${{ github.event.client_payload.stack }}
 
 jobs:
@@ -68,8 +69,7 @@ jobs:
         title: "Release: stack-${{ env.STACK }} @ ${{ env.STACK_HEAD }}"
         body: ${{ env.STACK_DIFF }}
         assignees: |
-          bot-digit
+          ${{ env.ACTOR }}
         reviewers: |
           fedjabosnic
-          oliverdon
         #team-reviewers: /b2c
