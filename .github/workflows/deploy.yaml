@@ -44,6 +44,7 @@ jobs:
     - name: Pull code
       uses: actions/checkout@v2
       with:
+        token: ${{ env.GITHUB_TOKEN }}
         fetch-depth: '0'
         submodules: 'recursive'
     
