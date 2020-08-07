@@ -1,0 +1,40 @@
+name: cd
+
+on:
+  push:
+    branches: [master]
+
+env:
+  GITHUB_TOKEN: ${{ secrets.BOT_TOKEN }}
+  TF_VERSION: 0.12.26
+  STACKS: "aaa bbb ccc"
+
+jobs:
+  ci:
+    name: cd
+    runs-on: ubuntu-latest
+
+    steps:
+
+    - name: Pull code
+      uses: actions/checkout@v2
+      with:
+        fetch-depth: '0'
+        submodules: 'recursive'
+
+    - name: Install terraform
+      uses: hashicorp/setup-terraform@v1.1.0
+      with:
+        terraform_wrapper: false
+        terraform_version: ${{ env.TF_VERSION }}
+
+    - name: Run terraform apply
+      run: |
+        for STACK in ${STACKS}
+        do
+        (
+          cd stack-${STACK}
+          terraform init -no-color
+          terraform apply -no-color -auto-approve
+        )
+        done
