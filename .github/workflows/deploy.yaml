@@ -52,6 +52,7 @@ jobs:
       run: |
         # Add submodule
         if [ ! -d "stack-${STACK}" ]; then
+          git config --global url."https://github.com/".insteadOf git@github.com:
           git submodule add git@github.com:fedjabosnic/tf-stack-${STACK}.git stack-${STACK}
           git submodule update --remote
           echo " ${STACK}" >> .variables/stacks
