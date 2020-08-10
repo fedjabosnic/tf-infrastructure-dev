@@ -7,10 +7,9 @@ on:
 env:
   GITHUB_TOKEN: ${{ secrets.BOT_TOKEN }}
   SSH_KEY: ${{ secrets.BOT_SSH_KEY }}
-  ENVIRONMENT: ${{ github.event.client_payload.environment }}
   STACK: ${{ github.event.client_payload.stack }}
   ACTOR: ${{ github.event.client_payload.actor }}
-  BRANCH: release/stack-${{ github.event.client_payload.stack }}
+  SHA: ${{ github.event.client_payload.sha }}
 
 jobs:
   build:
@@ -18,10 +17,6 @@ jobs:
 
     steps:
 
-    - name: Dump GitHub context
-      env:
-        GITHUB_CONTEXT: ${{ toJson(github) }}
-      run: echo "$GITHUB_CONTEXT"
     - name: Pull code
       uses: actions/checkout@v2
       with:
@@ -40,33 +35,26 @@ jobs:
           echo " ${STACK}" >> .variables/stacks
         fi
         
-        # Init submodule
+        # Update submodule
         git submodule init
         git submodule update
-
-        # Update submodule
-        STACK_BASE=$(git submodule status stack-${STACK} | cut -c 2-9)
-        cd stack-${STACK} && git fetch --all && git checkout ${ENVIRONMENT} && cd ..
-        STACK_HEAD=$(git submodule status stack-${STACK} | cut -c 2-9)
+        cd stack-${STACK} && git fetch --all && git checkout ${SHA} && cd ..
 
         # Prepare commit message
         STACK_DIFF=$(git diff --submodule=log stack-${STACK} | sed '1G' | sed 's/  </-/g' | sed 's/  >/-/g')
-
         STACK_DIFF="${STACK_DIFF//'%'/%25}"
         STACK_DIFF="${STACK_DIFF//$'\n'/%0A}"
         STACK_DIFF="${STACK_DIFF//$'\r'/%0D}"
 
-        echo ::set-env name=STACK_BASE::${STACK_BASE}
         echo ::set-env name=STACK_DIFF::${STACK_DIFF}
-        echo ::set-env name=STACK_HEAD::${STACK_HEAD}
 
     - name: Create branch and pull request
       uses: peter-evans/create-pull-request@v3
       with:
         token: ${{ env.GITHUB_TOKEN }}
-        commit-message: "stack-${{ env.STACK }} @ ${{ env.STACK_HEAD }}"
-        branch: ${{ env.BRANCH }}
-        title: "Release: stack-${{ env.STACK }} @ ${{ env.STACK_HEAD }}"
+        branch: "release/stack-${{ env.STACK }}"
+        commit-message: "stack-${{ env.STACK }} @ ${{ env.SHA }}"
+        title: "Release: stack-${{ env.STACK }} @ ${{ env.SHA }}"
         body: ${{ env.STACK_DIFF }}
         assignees: |
           ${{ env.ACTOR }}
