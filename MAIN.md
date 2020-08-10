@@ -105,6 +105,7 @@ A stack repository has the following structure:
 │   └── terraform.tfvars       -- environment variables
 │
 ├── stack-aaa               -- Submodule to stack-aaa repository
+│   ├── .local                 -- used for local development
 │   ├── .secrets               -> symbolic link to `../.secrets`
 │   ├── backend.tf             -> symbolic link to `../.variables/backend-aaa.tf`
 │   ├── terraform.tfvars       -> symbolic link to `../.variables/terraform.tfvars`
@@ -113,6 +114,7 @@ A stack repository has the following structure:
 │   └── ...
 │
 ├── stack-bbb               -- Submodule to stack-bbb repository
+│   ├── .local                 -- used for local development
 │   ├── .secrets               -> symbolic link to `../.secrets`
 │   ├── backend.tf             -> symbolic link to `../.variables/backend-bbb.tf`
 │   ├── terraform.tfvars       -> symbolic link to `../.variables/terraform.tfvars`
