@@ -39,5 +39,5 @@ jobs:
         MATRIX_CONTEXT: ${{ toJson(matrix) }}
       run: echo "$MATRIX_CONTEXT"
     - name: Only when scheduled
-      if: github.event_name == "schedule"
+      if: github.event_name == 'schedule'
       run: echo "scheduled..."
