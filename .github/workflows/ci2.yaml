@@ -4,8 +4,8 @@ on:
   pull_request:
     types: [opened, synchronize, reopened]
     branches: [master]
-  schedule:
-  - cron:  '*/5 * * * *'
+#  schedule:
+#  - cron:  '*/5 * * * *'
 
 jobs:
   ci:
